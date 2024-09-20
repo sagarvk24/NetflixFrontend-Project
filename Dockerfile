@@ -1,27 +1,26 @@
-# Use an official Node.js runtime as a base image (Node 14)
-FROM node:14
+# Use Node.js 14 (Alpine for smaller image)
+FROM node:14-alpine
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json (or npm-shrinkwrap.json) to the container
+# Copy package.json and package-lock.json first (to leverage Docker cache)
 COPY package*.json ./
 
-# Install any needed packages specified in package.json
-RUN npm install
+# Install only production dependencies
+RUN npm install --only=production
 
 # Copy the rest of the application code to the container
 COPY . .
 
-# Build the project
+# Build the app
 RUN npm run build
 
-# Define environment variable for NetflixMovieCatalog API service
-# This can be overridden by docker run --env MOVIE_CATALOG_SERVICE=...
+# Environment variable for NetflixMovieCatalog API
 ENV MOVIE_CATALOG_SERVICE=http://localhost:8080
 
-# Make port 3000 available to the world outside this container
+# Expose port 3000
 EXPOSE 3000
 
-# Run the app when the container launches
+# Start the app
 CMD ["npm", "start"]

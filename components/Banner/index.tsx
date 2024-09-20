@@ -24,12 +24,14 @@ export default function Banner() {
     try {
       const result = await axios.get('/api/discover?type=movie');
       setMedia(result.data.data[random]);
-    } catch (error) {}
+    } catch (error) {
+	console.log('Failed to fetch media:', error);
+      }
   };
 
   useEffect(() => {
     getMedia();
-  }, []);
+  }, [random]);
 
   return (
     <div className={styles.spotlight}>
